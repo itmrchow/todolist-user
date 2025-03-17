@@ -1,0 +1,9 @@
+packages:
+    github.com/itmrchow/todolist-users/internal/repository:
+        config:
+            filename: "{{.InterfaceNameSnake}}_mock.go"
+            dir: "{{.InterfaceDir}}"
+
+        interfaces:
+            UsersRepository:
+        
