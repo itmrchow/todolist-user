@@ -46,3 +46,11 @@ func (d *database) Update(ctx context.Context, user *entity.User) error {
 func (d *database) Delete(ctx context.Context, id uuid.UUID) error {
 	return d.conn.WithContext(ctx).Where("id = ?", id).Delete(&entity.User{}).Error
 }
+
+func (d *database) ExistsByEmail(ctx context.Context, email string) (bool, error) {
+	var count int64
+	if err := d.conn.WithContext(ctx).Model(&entity.User{}).Where("email = ?", email).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}

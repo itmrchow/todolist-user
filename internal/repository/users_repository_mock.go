@@ -118,6 +118,63 @@ func (_c *MockUsersRepository_Delete_Call) RunAndReturn(run func(context.Context
 	return _c
 }
 
+// ExistsByEmail provides a mock function with given fields: ctx, email
+func (_m *MockUsersRepository) ExistsByEmail(ctx context.Context, email string) (bool, error) {
+	ret := _m.Called(ctx, email)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ExistsByEmail")
+	}
+
+	var r0 bool
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (bool, error)); ok {
+		return rf(ctx, email)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) bool); ok {
+		r0 = rf(ctx, email)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, email)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockUsersRepository_ExistsByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ExistsByEmail'
+type MockUsersRepository_ExistsByEmail_Call struct {
+	*mock.Call
+}
+
+// ExistsByEmail is a helper method to define mock.On call
+//   - ctx context.Context
+//   - email string
+func (_e *MockUsersRepository_Expecter) ExistsByEmail(ctx interface{}, email interface{}) *MockUsersRepository_ExistsByEmail_Call {
+	return &MockUsersRepository_ExistsByEmail_Call{Call: _e.mock.On("ExistsByEmail", ctx, email)}
+}
+
+func (_c *MockUsersRepository_ExistsByEmail_Call) Run(run func(ctx context.Context, email string)) *MockUsersRepository_ExistsByEmail_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *MockUsersRepository_ExistsByEmail_Call) Return(_a0 bool, _a1 error) *MockUsersRepository_ExistsByEmail_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockUsersRepository_ExistsByEmail_Call) RunAndReturn(run func(context.Context, string) (bool, error)) *MockUsersRepository_ExistsByEmail_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Get provides a mock function with given fields: ctx, id
 func (_m *MockUsersRepository) Get(ctx context.Context, id uuid.UUID) (*entity.User, error) {
 	ret := _m.Called(ctx, id)
