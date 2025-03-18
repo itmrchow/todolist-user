@@ -54,3 +54,10 @@ func (d *database) ExistsByEmail(ctx context.Context, email string) (bool, error
 	}
 	return count > 0, nil
 }
+
+func (d *database) GetByEmailAndPassword(ctx context.Context, email, password string) (user *entity.User, err error) {
+	if err := d.conn.WithContext(ctx).Where("email = ? AND password = ?", email, password).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return
+}

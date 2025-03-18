@@ -7,10 +7,13 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"gorm.io/gorm"
 
 	"github.com/itmrchow/todolist-users/internal/entity"
+	mErr "github.com/itmrchow/todolist-users/internal/errors"
 	"github.com/itmrchow/todolist-users/internal/repository"
 )
 
@@ -57,7 +60,7 @@ func (s *UserServiceImplTestSuite) Test_userServiceImpl_RegisterUser() {
 			},
 			assertFunc: func(err error) {
 				s.Assert().Error(err)
-				s.Assert().Equal("internal server error", err.Error())
+				s.Assert().ErrorIs(err, &mErr.Err500InternalServer)
 			},
 		},
 		{
@@ -130,6 +133,87 @@ func (s *UserServiceImplTestSuite) Test_userServiceImpl_RegisterUser() {
 			tt.mockFunc(s.mockUserRepo)
 			err := s.userService.RegisterUser(tt.args.ctx, tt.args.req)
 			tt.assertFunc(err)
+		})
+	}
+}
+
+func (s *UserServiceImplTestSuite) Test_userServiceImpl_LoginUser() {
+	type args struct {
+		ctx context.Context
+		req *LoginReqDTO
+	}
+	tests := []struct {
+		name       string
+		args       args
+		mockFunc   func(m *repository.MockUsersRepository)
+		assertFunc func(resp *LoginRespDTO, err error)
+	}{
+		{
+			name: "db error",
+			args: args{
+				ctx: context.Background(),
+				req: &LoginReqDTO{
+					Email:    "db_error@example.com",
+					Password: "password",
+				},
+			},
+			mockFunc: func(m *repository.MockUsersRepository) {
+				m.EXPECT().GetByEmailAndPassword(context.Background(), "db_error@example.com", mock.AnythingOfType("string")).Return(nil, errors.New("db error")).Times(1)
+			},
+			assertFunc: func(resp *LoginRespDTO, err error) {
+				s.Assert().ErrorIs(err, &mErr.Err500InternalServer)
+			},
+		},
+		{
+			name: "user not found",
+			args: args{
+				ctx: context.Background(),
+				req: &LoginReqDTO{
+					Email:    "not_found@example.com",
+					Password: "password",
+				},
+			},
+			mockFunc: func(m *repository.MockUsersRepository) {
+				m.EXPECT().GetByEmailAndPassword(context.Background(), "not_found@example.com", mock.AnythingOfType("string")).Return(nil, gorm.ErrRecordNotFound).Times(1)
+			},
+			assertFunc: func(resp *LoginRespDTO, err error) {
+				s.Assert().ErrorIs(err, &mErr.Err400InvalidLoginInfo)
+			},
+		},
+		{
+			name: "success",
+			args: args{
+				ctx: context.Background(),
+				req: &LoginReqDTO{
+					Email:    "success@example.com",
+					Password: "password",
+				},
+			},
+			mockFunc: func(m *repository.MockUsersRepository) {
+				m.EXPECT().GetByEmailAndPassword(context.Background(), "success@example.com", mock.AnythingOfType("string")).Return(&entity.User{
+					ID:       uuid.New(),
+					Email:    "success@example.com",
+					Password: "password",
+					Name:     "test",
+				}, nil).Times(1)
+			},
+			assertFunc: func(resp *LoginRespDTO, err error) {
+				s.Assert().NoError(err)
+				s.Assert().Equal("success@example.com", resp.Email)
+				s.Assert().Equal("test", resp.Name)
+				s.Assert().NotEmpty(resp.Token)
+				s.Assert().NotEmpty(resp.ExpiresIn)
+			},
+		},
+	}
+
+	for _, tt := range tests {
+
+		s.Run(tt.name, func() {
+
+			tt.mockFunc(s.mockUserRepo)
+			resp, err := s.userService.LoginUser(tt.args.ctx, tt.args.req)
+			tt.assertFunc(resp, err)
 		})
 	}
 }

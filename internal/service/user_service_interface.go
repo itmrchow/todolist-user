@@ -28,5 +28,5 @@ type LoginRespDTO struct {
 	Name      string
 	Email     string
 	Token     string
-	ExpiresIn time.Duration
+	ExpiresIn time.Time
 }
