@@ -15,4 +15,5 @@ type UsersRepository interface {
 	Update(ctx context.Context, user *entity.User) error
 	Delete(ctx context.Context, id uuid.UUID) error
 	ExistsByEmail(ctx context.Context, email string) (bool, error)
+	GetByEmailAndPassword(ctx context.Context, email, password string) (*entity.User, error)
 }
