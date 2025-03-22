@@ -2,14 +2,12 @@ package infra
 
 import "github.com/spf13/viper"
 
-func InitConfig() {
+func InitConfig() (err error) {
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("../")
+	viper.AddConfigPath(".")
 
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(err)
-	}
+	err = viper.ReadInConfig()
+	return
 }

@@ -16,18 +16,18 @@ func InitMysqlDb() (*gorm.DB, error) {
 	db, err := gorm.Open(mysql.Open(getDNS()), &gorm.Config{})
 
 	if err != nil {
-		panic("failed to connect database")
+		return nil, err
 	}
 
 	err = db.AutoMigrate(&entity.User{})
 	if err != nil {
-		panic("failed to migrate database")
+		return nil, err
 	}
 
 	sqlDB, err := db.DB()
 
 	if err != nil {
-		panic("failed to get sql db")
+		return nil, err
 	}
 
 	sqlDB.SetMaxIdleConns(5)

@@ -18,7 +18,7 @@ type User struct {
 
 func (u *User) HashPassword() {
 
-	passwordBytes := sha512.Sum512([]byte(u.Password))
+	passwordBytes := sha512.Sum512([]byte(u.Password + u.Email))
 	password := fmt.Sprintf("%x", passwordBytes)
 
 	u.Password = password
