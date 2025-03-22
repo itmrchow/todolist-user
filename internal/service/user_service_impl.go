@@ -6,7 +6,13 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/itmrchow/todolist-proto/protobuf"
+	pb "github.com/itmrchow/todolist-proto/protobuf/user"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 
 	"github.com/itmrchow/todolist-users/internal/entity"
@@ -15,8 +21,6 @@ import (
 	"github.com/itmrchow/todolist-users/utils"
 )
 
-var _ UserService = &userServiceImpl{}
-
 var (
 	secretKey = viper.GetString("jwt.secret_key")
 	expireAt  = viper.GetInt("jwt.expire_at")
@@ -24,26 +28,62 @@ var (
 )
 
 type userServiceImpl struct {
+	pb.UnimplementedUserServiceServer
 	userRepo repository.UsersRepository
 }
 
-func NewUserService(userRepo repository.UsersRepository) UserService {
+func NewUserService(userRepo repository.UsersRepository) pb.UserServiceServer {
 	return &userServiceImpl{
 		userRepo: userRepo,
 	}
 }
 
-func (u *userServiceImpl) RegisterUser(ctx context.Context, req *RegisterReqDTO) (err error) {
+func (u *userServiceImpl) Login(ctx context.Context, req *pb.LoginRequest) (resp *pb.LoginResponse, err error) {
+	// get user info by email
+	user := &entity.User{
+		Email:    req.Email,
+		Password: req.Password,
+	}
+	user.HashPassword()
 
+	user, err = u.userRepo.GetByEmailAndPassword(ctx, user.Email, user.Password)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, status.Error(codes.Unauthenticated, mErr.ErrInvalidLoginInfo)
+		}
+		log.Error().Err(err).Msg("GetByEmailAndPassword error")
+		return nil, status.Error(codes.Internal, mErr.ErrInternalServerError)
+	}
+
+	// generate token
+	token, err := utils.GenerateToken(user.ID.String(), secretKey, issuer, expireAt)
+	if err != nil {
+		log.Error().Err(err).Msg("Generate token error")
+		return nil, status.Error(codes.Internal, mErr.ErrInternalServerError)
+	}
+
+	resp = &pb.LoginResponse{
+		Id:        user.ID.String(),
+		Name:      user.Name,
+		Email:     user.Email,
+		Token:     token,
+		ExpiresIn: timestamppb.New(time.Now().Add(time.Duration(expireAt) * time.Hour)),
+	}
+
+	return
+
+}
+
+func (u *userServiceImpl) Register(ctx context.Context, req *pb.RegisterRequest) (resp *protobuf.EmptyResponse, err error) {
 	// check email is exist?
 	isExist, err := u.userRepo.ExistsByEmail(ctx, req.Email)
 	if err != nil {
-		// TODO: print log
-		return &mErr.Err500InternalServer
+		log.Error().Err(err).Msg("internal server error")
+		return nil, status.Error(codes.Internal, mErr.ErrInternalServerError)
 	}
 
 	if isExist {
-		return &mErr.Err400EmailAlreadyExists
+		return nil, status.Error(codes.AlreadyExists, mErr.ErrEmailAlreadyExists)
 	}
 
 	// insert db
@@ -59,44 +99,8 @@ func (u *userServiceImpl) RegisterUser(ctx context.Context, req *RegisterReqDTO)
 	err = u.userRepo.Create(ctx, user)
 
 	if err != nil {
-		// TODO: print log
-		return &mErr.Err500InternalServer
-	}
-
-	return
-}
-
-func (u *userServiceImpl) LoginUser(ctx context.Context, req *LoginReqDTO) (resp *LoginRespDTO, err error) {
-
-	// get user info by email
-	user := &entity.User{
-		Email:    req.Email,
-		Password: req.Password,
-	}
-	user.HashPassword()
-
-	user, err = u.userRepo.GetByEmailAndPassword(ctx, user.Email, user.Password)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &mErr.Err400InvalidLoginInfo
-		}
-		// TODO: print log
-		return nil, &mErr.Err500InternalServer
-	}
-
-	// generate token
-	token, err := utils.GenerateToken(user.ID.String(), secretKey, issuer, expireAt)
-	if err != nil {
-		// TODO: print log
-		return nil, &mErr.Err500InternalServer
-	}
-
-	resp = &LoginRespDTO{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Token:     token,
-		ExpiresIn: time.Now().Add(time.Duration(expireAt) * time.Hour),
+		log.Error().Err(err).Msg("user , insert db error")
+		return nil, status.Error(codes.Internal, mErr.ErrInternalServerError)
 	}
 
 	return
