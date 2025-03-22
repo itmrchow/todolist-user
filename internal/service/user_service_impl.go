@@ -21,20 +21,26 @@ import (
 	"github.com/itmrchow/todolist-users/utils"
 )
 
-var (
-	secretKey = viper.GetString("jwt.secret_key")
-	expireAt  = viper.GetInt("jwt.expire_at")
-	issuer    = viper.GetString("server_name")
-)
-
 type userServiceImpl struct {
 	pb.UnimplementedUserServiceServer
-	userRepo repository.UsersRepository
+	userRepo  repository.UsersRepository
+	jwtConfig *JwtConfig
+}
+
+type JwtConfig struct {
+	SecretKey string
+	ExpireAt  int
+	Issuer    string
 }
 
 func NewUserService(userRepo repository.UsersRepository) pb.UserServiceServer {
 	return &userServiceImpl{
 		userRepo: userRepo,
+		jwtConfig: &JwtConfig{
+			SecretKey: viper.GetString("jwt.secret_key"),
+			ExpireAt:  viper.GetInt("jwt.expire_at"),
+			Issuer:    viper.GetString("server_name"),
+		},
 	}
 }
 
@@ -56,7 +62,7 @@ func (u *userServiceImpl) Login(ctx context.Context, req *pb.LoginRequest) (resp
 	}
 
 	// generate token
-	token, err := utils.GenerateToken(user.ID.String(), secretKey, issuer, expireAt)
+	token, err := utils.GenerateToken(user.ID.String(), u.jwtConfig.SecretKey, u.jwtConfig.Issuer, u.jwtConfig.ExpireAt)
 	if err != nil {
 		log.Error().Err(err).Msg("Generate token error")
 		return nil, status.Error(codes.Internal, mErr.ErrInternalServerError)
@@ -67,7 +73,7 @@ func (u *userServiceImpl) Login(ctx context.Context, req *pb.LoginRequest) (resp
 		Name:      user.Name,
 		Email:     user.Email,
 		Token:     token,
-		ExpiresIn: timestamppb.New(time.Now().Add(time.Duration(expireAt) * time.Hour)),
+		ExpiresIn: timestamppb.New(time.Now().Add(time.Duration(u.jwtConfig.ExpireAt) * time.Hour)),
 	}
 
 	return
