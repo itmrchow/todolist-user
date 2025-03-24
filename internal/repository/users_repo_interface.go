@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/itmrchow/todolist-users/internal/entity"
+	"github.com/itmrchow/todolist-user/internal/entity"
 )
 
 type UsersRepository interface {

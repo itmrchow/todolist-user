@@ -5,7 +5,7 @@ import (
 
 	jwt "github.com/golang-jwt/jwt/v5"
 
-	mErr "github.com/itmrchow/todolist-users/internal/errors"
+	mErr "github.com/itmrchow/todolist-user/internal/errors"
 )
 
 // GenerateToken generates a JWT token for a user

@@ -11,9 +11,9 @@ import (
 	"google.golang.org/grpc/reflection"
 	"gorm.io/gorm"
 
-	"github.com/itmrchow/todolist-users/internal/infra"
-	"github.com/itmrchow/todolist-users/internal/repository"
-	"github.com/itmrchow/todolist-users/internal/service"
+	"github.com/itmrchow/todolist-user/internal/infra"
+	"github.com/itmrchow/todolist-user/internal/repository"
+	"github.com/itmrchow/todolist-user/internal/service"
 )
 
 func main() {

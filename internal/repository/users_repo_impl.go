@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
-	"github.com/itmrchow/todolist-users/internal/entity"
+	"github.com/itmrchow/todolist-user/internal/entity"
 )
 
 var _ UsersRepository = &database{}

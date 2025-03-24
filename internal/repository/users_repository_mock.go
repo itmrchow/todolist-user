@@ -8,7 +8,7 @@ import (
 	mock "github.com/stretchr/testify/mock"
 	uuid "github.com/google/uuid"
 
-	entity "github.com/itmrchow/todolist-users/internal/entity"
+	entity "github.com/itmrchow/todolist-user/internal/entity"
 )
 
 var _ UsersRepository = &MockUsersRepository{}

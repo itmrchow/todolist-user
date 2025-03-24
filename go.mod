@@ -1,4 +1,4 @@
-module github.com/itmrchow/todolist-users
+module github.com/itmrchow/todolist-user
 
 go 1.23.6
 

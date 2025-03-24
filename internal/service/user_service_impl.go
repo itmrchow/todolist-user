@@ -15,10 +15,10 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 
-	"github.com/itmrchow/todolist-users/internal/entity"
-	mErr "github.com/itmrchow/todolist-users/internal/errors"
-	"github.com/itmrchow/todolist-users/internal/repository"
-	"github.com/itmrchow/todolist-users/utils"
+	"github.com/itmrchow/todolist-user/internal/entity"
+	mErr "github.com/itmrchow/todolist-user/internal/errors"
+	"github.com/itmrchow/todolist-user/internal/repository"
+	"github.com/itmrchow/todolist-user/utils"
 )
 
 type userServiceImpl struct {

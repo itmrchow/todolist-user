@@ -13,8 +13,8 @@ import (
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 
-	"github.com/itmrchow/todolist-users/internal/entity"
-	"github.com/itmrchow/todolist-users/internal/repository"
+	"github.com/itmrchow/todolist-user/internal/entity"
+	"github.com/itmrchow/todolist-user/internal/repository"
 )
 
 func TestRegisterTestSuite(t *testing.T) {
