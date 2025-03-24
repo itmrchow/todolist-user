@@ -37,9 +37,9 @@ func NewUserService(userRepo repository.UsersRepository) pb.UserServiceServer {
 	return &userServiceImpl{
 		userRepo: userRepo,
 		jwtConfig: &JwtConfig{
-			SecretKey: viper.GetString("jwt.secret_key"),
-			ExpireAt:  viper.GetInt("jwt.expire_at"),
-			Issuer:    viper.GetString("server_name"),
+			SecretKey: viper.GetString("JWT_SECRET_KEY"),
+			ExpireAt:  viper.GetInt("JWT_EXPIRE_AT"),
+			Issuer:    viper.GetString("SERVER_NAME"),
 		},
 	}
 }

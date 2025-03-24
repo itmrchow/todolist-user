@@ -42,12 +42,12 @@ func getDNS() (dns string) {
 	// account:password@tcp(host:port)/{db_name}{url_suffix}
 
 	dns = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s%s",
-		viper.GetString("mysql.db_account"),
-		viper.GetString("mysql.db_password"),
-		viper.GetString("mysql.db_host"),
-		viper.GetString("mysql.db_port"),
-		viper.GetString("mysql.db_name"),
-		viper.GetString("mysql.url_suffix"))
+		viper.GetString("MYSQL_DB_ACCOUNT"),
+		viper.GetString("MYSQL_DB_PASSWORD"),
+		viper.GetString("MYSQL_DB_HOST"),
+		viper.GetString("MYSQL_DB_PORT"),
+		viper.GetString("MYSQL_DB_NAME"),
+		viper.GetString("MYSQL_URL_SUFFIX"))
 
 	return
 }
