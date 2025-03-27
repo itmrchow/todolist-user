@@ -50,5 +50,6 @@ docker run -it -p 50051:50051 -v your_config.yaml:/app/config.yaml itmrchow/todo
 
 ## 部署與scaling
 
-
+### On-premise deployment with scale plan.
+### Cloud deployment with scale plan.
 
