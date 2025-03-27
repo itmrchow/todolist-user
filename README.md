@@ -6,9 +6,9 @@
 - 使用jwt進行token認證
 - 使用grpc進行微服務間的通訊
 - 使用docker進行容器化部署
-
+ 
 # install
-
+ 
 ## 先決條件
 - 可連接的mysql資料庫
 - config.yaml or add env
