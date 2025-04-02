@@ -1,3 +1,5 @@
-config*.yaml
+
 launch.json
 todolist-user
+config_local.yaml
+configmap.yaml

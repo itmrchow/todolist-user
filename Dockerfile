@@ -15,5 +15,5 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
 FROM alpine:3.19.2
 WORKDIR /app
 COPY --from=builder /app/todolist-user /app
-COPY ./config.yaml /app
+COPY --from=builder /app/config.yaml /app  
 ENTRYPOINT ["./todolist-user"]
