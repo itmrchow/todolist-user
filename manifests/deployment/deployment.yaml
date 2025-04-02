@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todolist-user
+  namespace: todolist
+  labels:
+    app: todolist-user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todolist-user
+  template:
+    metadata:
+      labels:
+        app: todolist-user
+    spec:
+      containers:
+      - name: todolist-user
+        image: itmrchow/todolist-user:0.0.1
+        ports:
+        - containerPort: 50051
+        envFrom:
+        - configMapRef:
+            name: todolist-user-config
+        - secretRef:
+            name: todolist-user-secret
