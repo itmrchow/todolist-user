@@ -3,8 +3,8 @@ module github.com/itmrchow/todolist-user
 go 1.23.6
 
 require (
-	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
+	github.com/itmrchow/microservice-common v0.0.0-20250407011420-22459c30688a
 	github.com/itmrchow/todolist-proto v0.0.0-20250322125151-3207beefe9ac
 	github.com/rs/zerolog v1.34.0
 	github.com/spf13/viper v1.20.0
@@ -20,6 +20,7 @@ require (
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

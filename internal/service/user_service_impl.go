@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/itmrchow/microservice-common/token"
 	"github.com/itmrchow/todolist-proto/protobuf"
 	pb "github.com/itmrchow/todolist-proto/protobuf/user"
 	"github.com/rs/zerolog/log"
@@ -18,7 +19,6 @@ import (
 	"github.com/itmrchow/todolist-user/internal/entity"
 	mErr "github.com/itmrchow/todolist-user/internal/errors"
 	"github.com/itmrchow/todolist-user/internal/repository"
-	"github.com/itmrchow/todolist-user/utils"
 )
 
 type userServiceImpl struct {
@@ -62,7 +62,7 @@ func (u *userServiceImpl) Login(ctx context.Context, req *pb.LoginRequest) (resp
 	}
 
 	// generate token
-	token, err := utils.GenerateToken(user.ID.String(), u.jwtConfig.SecretKey, u.jwtConfig.Issuer, u.jwtConfig.ExpireAt)
+	token, err := token.GenerateToken(user.ID.String(), u.jwtConfig.SecretKey, u.jwtConfig.Issuer, u.jwtConfig.ExpireAt)
 	if err != nil {
 		log.Error().Err(err).Msg("Generate token error")
 		return nil, status.Error(codes.Internal, mErr.ErrInternalServerError)
